@@ -8,6 +8,7 @@ public class Almacenes implements Comparable<Almacenes> {
     private String ciudad_almacen;
     private String gerente_asignado;
     private ArrayList<Zona> zonas = new ArrayList<Zona>();
+    private Ubicacion_Corporativa ciudad;   // AGREGACIÓN: la ciudad donde está el almacén
     
     public Almacenes(int id_almacen, String nombre_almacen, String ciudad_almacen, String gerente_asignado) {
         this.id_almacen = id_almacen;
@@ -34,11 +35,34 @@ public class Almacenes implements Comparable<Almacenes> {
         this.nombre_almacen = nombre_almacen;
     }
 
+    // Si el almacén está vinculado a una ciudad, el nombre sale de ella (una sola fuente de verdad)
     public String getCiudad_almacen() {
-        return ciudad_almacen;
+        return ciudad != null ? ciudad.getNombreCiudad() : ciudad_almacen;
     }
+
     public void setCiudad_almacen(String ciudad_almacen) {
         this.ciudad_almacen = ciudad_almacen;
+        if (this.ciudad != null && !this.ciudad.getNombreCiudad().equalsIgnoreCase(ciudad_almacen)) {
+            this.ciudad.quitarAlmacen(this);   // el nombre cambió: ya no es la misma ciudad
+            this.ciudad = null;                // el controlador vuelve a enlazarlo
+        }
+    }
+
+    public Ubicacion_Corporativa getCiudad() {
+        return ciudad;
+    }
+
+    // Cambia de ciudad: sale de la lista de la anterior y entra en la de la nueva
+    public void setCiudad(Ubicacion_Corporativa nueva) {
+        if (this.ciudad != null) {
+            this.ciudad_almacen = this.ciudad.getNombreCiudad();   // recuerda el último nombre
+            this.ciudad.quitarAlmacen(this);
+        }
+        this.ciudad = nueva;
+        if (nueva != null) {
+            this.ciudad_almacen = nueva.getNombreCiudad();
+            nueva.agregarAlmacen(this);
+        }
     }
 
     public String getGerente_asignado() {
@@ -50,7 +74,7 @@ public class Almacenes implements Comparable<Almacenes> {
 
     @Override
     public String toString() {
-        return "Almacenes{" + "id_almacen=" + id_almacen + ", nombre_almacen=" + nombre_almacen + ", ciudad_almacen=" + ciudad_almacen + ", gerente_asignado=" + gerente_asignado + '}';
+        return "Almacenes{" + "id_almacen=" + id_almacen + ", nombre_almacen=" + nombre_almacen + ", ciudad_almacen=" + getCiudad_almacen() + ", gerente_asignado=" + gerente_asignado + '}';
     }//Fin toString
 
     @Override

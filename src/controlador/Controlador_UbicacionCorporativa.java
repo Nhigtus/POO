@@ -2,6 +2,7 @@ package controlador;
 import java.util.ArrayList;
 import java.util.Collections;
 import modelo.Ubicacion_Corporativa;
+import modelo.Almacenes;
 
 public class Controlador_UbicacionCorporativa implements ICRUD{
    public static ArrayList<Ubicacion_Corporativa> arregloUC = new ArrayList<Ubicacion_Corporativa>();
@@ -11,10 +12,12 @@ public class Controlador_UbicacionCorporativa implements ICRUD{
         Ubicacion_Corporativa uc = (Ubicacion_Corporativa)obj;
         if (arregloUC.isEmpty()) {
             arregloUC.add(uc);
+            Controlador_Almacenes.enlazarCiudadesPendientes();
             return true;
         } else if (!arregloUC.contains(uc)) { // Utiliza el equals() definido en la clase modelo
             arregloUC.add(uc);
             enlazarPais(uc);
+            Controlador_Almacenes.enlazarCiudadesPendientes(); // almacenes que esperaban esta ciudad
             return true;
         } else {
             return false;
@@ -73,6 +76,10 @@ public Object update(Object obj) {
     anterior.getPais().quitarCiudad(anterior);   // la ciudad vieja sale de su país
     arregloUC.set(pos, uc);
     enlazarPais(uc);                             // la nueva se une al país que corresponda
+    for (Almacenes a : new ArrayList<Almacenes>(anterior.getAlmacenes())) {
+        a.setCiudad(uc);                         // sus almacenes pasan a la ciudad actualizada
+    }
+    Controlador_Almacenes.enlazarCiudadesPendientes();
 
     return uc;
 }
@@ -84,6 +91,9 @@ public boolean delete(Object obj) {
     if (pos < 0) return false;
     Ubicacion_Corporativa borrada = arregloUC.get(pos);
     borrada.getPais().quitarCiudad(borrada);     // la ciudad sale de la lista de su país
+    for (Almacenes a : new ArrayList<Almacenes>(borrada.getAlmacenes())) {
+        a.setCiudad(null);   // agregación: los almacenes siguen existiendo, solo pierden la ciudad
+    }
     arregloUC.remove(pos);
     return true;
 }

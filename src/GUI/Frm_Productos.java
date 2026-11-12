@@ -13,6 +13,11 @@ public class Frm_Productos extends javax.swing.JFrame {
     //instancias
     private final Controlador_Productos cont = new Controlador_Productos();
     private DefaultTableModel modeloTabla;
+    private javax.swing.JButton btnOrdenarNombre;
+    private javax.swing.JTextField txtStockMax;
+    private javax.swing.JButton btnFiltrarStock;
+    private javax.swing.JButton btnQuitarFiltro;
+    private Integer stockMaxFiltro = null;
     
     //consturctor
     public Frm_Productos() {
@@ -21,6 +26,7 @@ public class Frm_Productos extends javax.swing.JFrame {
         setTitle("Gestión de Productos");
         new Vista_Productos(); //los produtos por defecto
         configurarTabla();
+        agregarControlesExtra();
         cargarTabla();
     }
 
@@ -406,7 +412,7 @@ public class Frm_Productos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnOrdenarIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarIDActionPerformed
-        cont.ordenarPorId();          // ascendente por ID compareTo
+        cont.ordenarPorId();          // Quicksort descendente por ID
         cargarTabla();
     }//GEN-LAST:event_btnOrdenarIDActionPerformed
 
@@ -416,6 +422,8 @@ public class Frm_Productos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOrdenarStockActionPerformed
 
     private void btnMostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarTodosActionPerformed
+        stockMaxFiltro = null;
+        if (txtStockMax != null) txtStockMax.setText("");
         cargarTabla();
     }//GEN-LAST:event_btnMostrarTodosActionPerformed
 
@@ -480,6 +488,55 @@ public class Frm_Productos extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     //Metodos
+    // Agrega por código el Mergesort por nombre y el filtro de existencias (sin tocar el diseñador)
+    private void agregarControlesExtra() {
+        btnOrdenarNombre = new javax.swing.JButton("Ordenar por nombre (Mergesort)");
+        btnOrdenarNombre.addActionListener(e -> {
+            cont.ordenarPorNombre();
+            cargarTabla();
+        });
+
+        txtStockMax = new javax.swing.JTextField(5);
+        btnFiltrarStock = new javax.swing.JButton("Filtrar stock <=");
+        btnQuitarFiltro = new javax.swing.JButton("Quitar filtro");
+
+        btnFiltrarStock.addActionListener(e -> {
+            try {
+                stockMaxFiltro = Integer.parseInt(txtStockMax.getText().trim());
+                if (stockMaxFiltro < 0) throw new NumberFormatException();
+                cargarTabla();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "El stock máximo debe ser un entero no negativo.",
+                        "Dato inválido", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        btnQuitarFiltro.addActionListener(e -> {
+            stockMaxFiltro = null;
+            txtStockMax.setText("");
+            cargarTabla();
+        });
+
+        javax.swing.JPanel filaStock = new javax.swing.JPanel(
+                new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 4, 0));
+        filaStock.add(new javax.swing.JLabel("Stock máximo:"));
+        filaStock.add(txtStockMax);
+        filaStock.add(btnFiltrarStock);
+        filaStock.add(btnQuitarFiltro);
+
+        jPanel3.removeAll();
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
+        jPanel3.add(btnOrdenarID);
+        jPanel3.add(btnOrdenarStock);
+        jPanel3.add(btnMostrarTodos);
+        jPanel3.add(btnOrdenarNombre);
+        jPanel3.add(filaStock);
+
+        pack();
+        setLocationRelativeTo(null);
+    }
+
     private void configurarTabla() {
         String[] columnas = {"ID", "SKU", "Nombre", "Descripción",
                              "Precio", "Stock", "Proveedor", "Tipo", "Detalle"
@@ -496,6 +553,7 @@ public class Frm_Productos extends javax.swing.JFrame {
     private void cargarTabla() {
         modeloTabla.setRowCount(0);
         for (Producto p : Controlador_Productos.arregloProductos) {
+            if (stockMaxFiltro != null && p.getStock_actual() > stockMaxFiltro) continue;
             modeloTabla.addRow(new Object[]{
                 p.getId(), p.getCodigoSKU(), p.getNombre(), p.getDescripción(),
                 p.getPrecio_unitario(), p.getStock_actual(),

@@ -1,11 +1,14 @@
 package modelo;
 
+import java.util.ArrayList;
+
 /**
  * Ciudad de la ubicación corporativa. ASOCIACIÓN con Pais: cada ciudad pertenece a un país
  * (el país es quien la contiene: ver Pais.getCiudades()).
  */
 public class Ubicacion_Corporativa implements Comparable<Ubicacion_Corporativa>{
     private Pais pais;               // relación con el país
+    private ArrayList<Almacenes> almacenes = new ArrayList<Almacenes>();   // AGREGACIÓN: almacenes de esta ciudad
     //ciudad
     private int idCiudad;
     private String nombreCiudad;
@@ -37,7 +40,7 @@ public class Ubicacion_Corporativa implements Comparable<Ubicacion_Corporativa>{
         return pais;
     }
 
-    // Cambia de país: sale de la lista del país anterior y entra en la del nuevo
+    
     public void setPais(Pais nuevo) {
         if (this.pais != null) {
             this.pais.quitarCiudad(this);
@@ -48,7 +51,7 @@ public class Ubicacion_Corporativa implements Comparable<Ubicacion_Corporativa>{
         }
     }
 
-    // ahora delegan en el objeto Pais
+    // delegan en el objeto Pais
     public int getIdPais() {
         return pais.getId();
     }
@@ -89,6 +92,21 @@ public class Ubicacion_Corporativa implements Comparable<Ubicacion_Corporativa>{
         this.referenciaPais = referenciaPais;
     }//Fin getter y setter
 
+    // ----- agregación con Almacenes: la ciudad agrupa almacenes, pero ellos existen por sí solos -----
+    public ArrayList<Almacenes> getAlmacenes() {
+        return almacenes;
+    }
+
+    public void agregarAlmacen(Almacenes a) {
+        if (a != null && !almacenes.contains(a)) {
+            almacenes.add(a);
+        }
+    }
+
+    public void quitarAlmacen(Almacenes a) {
+        almacenes.remove(a);
+    }
+
     //tostring
     @Override
     public String toString() {
@@ -121,5 +139,5 @@ public class Ubicacion_Corporativa implements Comparable<Ubicacion_Corporativa>{
     @Override
     public int hashCode() {
         return Integer.hashCode(idCiudad);
-    }//fin hascode para id ciudad
+    }
 }

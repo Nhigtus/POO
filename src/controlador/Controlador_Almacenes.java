@@ -3,6 +3,7 @@ package controlador;
 import java.util.ArrayList;
 import java.util.Collections;
 import modelo.Almacenes;
+import modelo.Ubicacion_Corporativa;
 
 public class Controlador_Almacenes implements ICRUD {
   public static ArrayList<Almacenes> arregloAlmacenes = new ArrayList<Almacenes>();
@@ -13,11 +14,13 @@ public class Controlador_Almacenes implements ICRUD {
         if(arregloAlmacenes.isEmpty())
         {
             arregloAlmacenes.add(al);
+            enlazarCiudad(al);
             return true;
         }
         else if(!arregloAlmacenes.contains(al))
         {
             arregloAlmacenes.add(al);
+            enlazarCiudad(al);
             return true;
         }
         else
@@ -81,6 +84,7 @@ public class Controlador_Almacenes implements ICRUD {
 
     existente.setNombre_almacen(al.getNombre_almacen());
     existente.setCiudad_almacen(al.getCiudad_almacen());
+    enlazarCiudad(existente);
     existente.setGerente_asignado(al.getGerente_asignado());
 
     return existente;
@@ -93,6 +97,7 @@ public class Controlador_Almacenes implements ICRUD {
     if (pos < 0) return false;
     Almacenes existente = arregloAlmacenes.get(pos);
     Controlador_Zona.eliminarZonasDeAlmacen(existente);   // sin almacén no hay zonas
+    existente.setCiudad(null);                            // la ciudad deja de tenerlo en su lista
     arregloAlmacenes.remove(pos);
     return true;
     }//fin eliminar
@@ -106,5 +111,32 @@ public class Controlador_Almacenes implements ICRUD {
     public int buscarIndice(int id) {
          Collections.sort(arregloAlmacenes);
     return Collections.binarySearch(arregloAlmacenes, new Almacenes(id, "", "", ""));
+    }
+
+    // ---------- relación Ciudad -> Almacén ----------
+    // Busca entre las ubicaciones registradas la ciudad con el nombre del almacén y los vincula
+    private void enlazarCiudad(Almacenes al) {
+        String nombre = al.getCiudad_almacen();
+        if (nombre == null || al.getCiudad() != null) return;   // ya está vinculado
+        for (Ubicacion_Corporativa u : Controlador_UbicacionCorporativa.arregloUC) {
+            if (sinTildes(u.getNombreCiudad()).equals(sinTildes(nombre))) {
+                al.setCiudad(u);
+                return;
+            }
+        }
+    }
+
+    // Se llama cuando se registra una ciudad nueva: vincula los almacenes que estaban esperándola
+    public static void enlazarCiudadesPendientes() {
+        Controlador_Almacenes c = new Controlador_Almacenes();
+        for (Almacenes a : arregloAlmacenes) {
+            c.enlazarCiudad(a);
+        }
+    }
+
+    // Para comparar "Bogota" con "Bogotá" sin importar tildes ni mayúsculas
+    private static String sinTildes(String t) {
+        String n = java.text.Normalizer.normalize(t.trim(), java.text.Normalizer.Form.NFD);
+        return n.replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 }

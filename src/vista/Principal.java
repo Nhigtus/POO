@@ -34,6 +34,7 @@ public class Principal {
                 case 3: 
                     Vista_Almacenes k = new Vista_Almacenes();
                     k.menuVistaAlmacenes();
+                    break;
                 
                 case 4:
                     Vista_Ubicacion_Corporativa nuevaUbicacion = new Vista_Ubicacion_Corporativa();

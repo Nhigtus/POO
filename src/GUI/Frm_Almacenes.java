@@ -39,11 +39,12 @@ public class Frm_Almacenes extends javax.swing.JFrame {
     public Frm_Almacenes() {
         initComponents();
         if (!inicializado) {
+            new vista.Vista_Ubicacion_Corporativa();   // las ciudades deben existir antes de enlazar los almacenes
             new Vista_Almacenes();
             new vista.Vista_Productos();     // datos base para asignar productos a las zonas
             inicializado = true;
             }
-        modeloTabla = new DefaultTableModel(new String[]{"ID", "Nombre", "Ciudad", "Gerente"}, 0){
+        modeloTabla = new DefaultTableModel(new String[]{"ID", "Nombre", "Ciudad", "Gerente", "País"}, 0){
         @Override
         public boolean isCellEditable(int fila, int col) {
             return false;
@@ -538,6 +539,7 @@ organizarDiseno();
     }
     if (cont.insertar(a)) {
         JOptionPane.showMessageDialog(this, "Almacén registrado.");
+        avisarSiSinCiudad(a);
         cargarTabla();
     cargarAlmacenesCombo();
     limpiar();
@@ -570,6 +572,7 @@ organizarDiseno();
         return;
     }
     JOptionPane.showMessageDialog(this, "Almacén actualizado.");
+    avisarSiSinCiudad(a);
     cargarTabla();
     cargarAlmacenesCombo();
     limpiar();
@@ -785,7 +788,8 @@ private void cargarTabla() {
     modeloTabla.setRowCount(0);
     for (Almacenes a : Controlador_Almacenes.arregloAlmacenes) {
         modeloTabla.addRow(new Object[]{a.getId_almacen(), a.getNombre_almacen(),
-            a.getCiudad_almacen(), a.getGerente_asignado()});
+            a.getCiudad_almacen(), a.getGerente_asignado(),
+            (a.getCiudad() != null ? a.getCiudad().getNombrePais() : "-")});
     }
 }
 
@@ -795,6 +799,17 @@ private void limpiar() {
     textCiudad.setText("");
     textGerenteAsignado.setText("");
     table.clearSelection();
+}
+
+// Avisa si el nombre de la ciudad no coincide con ninguna ciudad registrada en Ubicaciones
+private void avisarSiSinCiudad(Almacenes a) {
+    Almacenes real = (Almacenes) cont.consultarUno(a);
+    if (real != null && real.getCiudad() == null) {
+        JOptionPane.showMessageDialog(this,
+                "La ciudad \"" + real.getCiudad_almacen() + "\" no está registrada en Ubicaciones.\n"
+                + "El almacén quedó guardado, pero sin ciudad vinculada.",
+                "Aviso", JOptionPane.WARNING_MESSAGE);
+    }
 }
 
 private void aviso(String msg) {

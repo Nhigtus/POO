@@ -27,6 +27,11 @@ public class Vista_Ubicacion_Corporativa {
         ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 2, "Manizales", "Sucursal sur"));
         ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 90, "Cali", "Centro de Distribución"));
         ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 14, "Barranquilla", "Sucursal este"));
+        ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 50, "Bucaramanga", "Sucursal oriente"));
+        ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 51, "Cúcuta", "Sucursal frontera"));
+        ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 52, "Pereira", "Sucursal eje cafetero"));
+        ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 53, "Cartagena", "Sucursal caribe"));
+        ubiCorporativa.insertar(new Ubicacion_Corporativa(1, "Colombia", 54, "Santa Marta", "Sucursal costa"));
         ubiCorporativa.insertar(new Ubicacion_Corporativa(3, "México", 101, "CDMX", "Sede Regional"));
         ubiCorporativa.insertar(new Ubicacion_Corporativa(4, "Corea", 301, "Seul", "Distribuidor"));
         ubiCorporativa.insertar(new Ubicacion_Corporativa(4, "Corea", 320, "Busan", "Distribuidor"));
@@ -44,7 +49,7 @@ public class Vista_Ubicacion_Corporativa {
             System.out.println("Ingrese el ID del pais a consultar");
             if(leerDatos.hasNextInt()){             
                 ubicacionPais.setIdPais(leerDatos.nextInt());
-                //aux de ubicaiconPais para que no se modifique
+                
                 Ubicacion_Corporativa encontrada = (Ubicacion_Corporativa) ubiCorporativa.consultarUno(ubicacionPais);
                 if(encontrada != null)
                     System.out.println(ubicacionPais.toString());
@@ -109,7 +114,7 @@ public class Vista_Ubicacion_Corporativa {
                             leerDatos.next();
                         }
                     }while(verif != true); //fin while verficar del ID del pais
-                    leerDatos.nextLine(); //Limpiamos para que no se quede pegado
+                    leerDatos.nextLine(); //Limpiamos para que no se quede pegado y continue
                     
                     System.out.println("Ingrese el nombre del Pais");
                     nuevaUbicacion.setNombrePais(leerDatos.nextLine());

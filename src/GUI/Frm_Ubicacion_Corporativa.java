@@ -353,7 +353,7 @@ public class Frm_Ubicacion_Corporativa extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOrdenarPaisActionPerformed
 
     private void btnOrdenarCiudadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdenarCiudadActionPerformed
-        cont.ordenar(1);       // descendente por ID de ciudad
+        cont.ordenarPorId();   // Quicksort descendente por ID de ciudad
         cargarTabla();
     }//GEN-LAST:event_btnOrdenarCiudadActionPerformed
 
