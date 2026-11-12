@@ -1,6 +1,6 @@
 # Diagramas UML - Proyecto POO (Entrega 2)
 
-Estos diagramas salen del **código real** que está en `src/`, no de una idea de cómo debería ser.
+Estos diagramas salen del **código real** que está en `src/`, no de una idea de cómo debería ser. Están dentro de `src/uml/` para que aparezcan en el proyecto de NetBeans.
 No inventé relaciones que el código todavía no tiene.
 
 ## Archivos
@@ -41,7 +41,7 @@ Por eso el diagrama no muestra asociaciones por objeto entre `Movimiento_Logisti
 Ya tienes instalado el plugin de PlantUML en NetBeans (está en `.netbeans/31/modules/ext/org.netbeans.modules.plantumlnb`).
 
 1. Abre el proyecto en NetBeans.
-2. Abre cualquier archivo `.puml` de la carpeta `uml/`.
+2. Abre cualquier archivo `.puml` de la carpeta `src/uml/`.
 3. Usa la vista previa de PlantUML o clic derecho para generar/exportar la imagen.
 
 También puedes regenerar los PNG desde terminal:
@@ -50,14 +50,15 @@ También puedes regenerar los PNG desde terminal:
 cd /home/nhigtus/NetBeansProjects/POO
 java -Djava.awt.headless=true \
   -jar /home/nhigtus/.netbeans/31/modules/ext/org.netbeans.modules.plantumlnb/1/net-sourceforge-plantuml/plantuml.jar \
-  -tpng -o uml uml/*.puml
+  -tpng -o src/uml src/uml/*.puml
 ```
 
 ## Para la entrega final
 
-El PDF pide el diagrama final en **ArgoUML o StarUML**. Los `.puml` son la fuente y la guía; para el entregable formal puedes:
+La profesora acepta imágenes, así que puedes usar directamente los `.png`:
 
-- Redibujar `02_Diagrama_Clases_Dominio.puml` en StarUML/ArgoUML (es el más corto y claro), o
-- Usar `01_Diagrama_Clases_Completo.puml` si quieres incluir controladores.
+- `02_Diagrama_Clases_Dominio.png` para el diagrama de clases.
+- `03_Diagrama_Paquetes_MVC.png` si pide explicar MVC.
+- `01_Diagrama_Clases_Completo.png` si quieres incluir también los controladores.
 
-No recomiendo entregar solo el PNG de PlantUML si el profesor exige el archivo de StarUML/ArgoUML. Pero el contenido y las relaciones ya están listos; solo es pasarlo a la herramienta.
+Los `.puml` quedan como fuente editable por si hay que corregir algo y volver a generar la imagen.
