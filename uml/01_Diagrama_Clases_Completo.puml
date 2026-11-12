@@ -1,0 +1,224 @@
+@startuml 01_Diagrama_Clases_Completo
+!pragma layout smetana
+' Diagrama de clases del sistema ERP de fincas de cacao.
+' Basado en el codigo actual de la Entrega 2.
+' Nota: Movimiento_Logistico y Usuario usan String para producto, operario y almacen;
+' por eso no se dibujan asociaciones por objeto que el codigo todavia no implementa.
+
+title Sistema ERP Fincas de Cacao - Diagrama de Clases (Entrega 2)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 70
+hide empty members
+hide circle
+
+package "modelo" {
+  class Producto {
+    - id : int
+    - codigoSKU : String
+    - nombre : String
+    - descripcion : String
+    - precio_unitario : float
+    - stock_actual : int
+    - proveedor : String
+    - tipo : String
+    + Producto(...)
+    + Producto()
+    + getInfoAdicional() : String
+    + compareTo(Producto) : int
+    + equals(Object) : boolean
+    + toString() : String
+  }
+
+  class ProductoPerecedero {
+    - fechaCaducidad : String
+    + ProductoPerecedero(...)
+    + ProductoPerecedero(id, codigoSKU, nombre, descripción, precio, stock, proveedor, fechaCaducidad)
+    + ProductoPerecedero()
+    + getInfoAdicional() : String
+    + toString() : String
+  }
+
+  class Pais {
+    - id : int
+    - nombre : String
+    - ciudades : ArrayList~Ubicacion_Corporativa~
+    + Pais(id : int, nombre : String)
+    + Pais()
+    + agregarCiudad(Ubicacion_Corporativa) : void
+    + quitarCiudad(Ubicacion_Corporativa) : void
+  }
+
+  class Ubicacion_Corporativa {
+    - idCiudad : int
+    - nombreCiudad : String
+    - referenciaPais : String
+    - pais : Pais
+    - almacenes : ArrayList~Almacenes~
+    + Ubicacion_Corporativa(...)
+    + Ubicacion_Corporativa()
+    + getIdPais() : int
+    + getNombrePais() : String
+    + agregarAlmacen(Almacenes) : void
+    + quitarAlmacen(Almacenes) : void
+    + compareTo(Ubicacion_Corporativa) : int
+  }
+
+  class Almacenes {
+    - id_almacen : int
+    - nombre_almacen : String
+    - ciudad_almacen : String
+    - gerente_asignado : String
+    - ciudad : Ubicacion_Corporativa
+    - zonas : ArrayList~Zona~
+    + Almacenes(...)
+    + Almacenes()
+    + getCiudad() : Ubicacion_Corporativa
+    + setCiudad(Ubicacion_Corporativa) : void
+    + getCiudad_almacen() : String
+    + agregarZona(Zona) : void
+    + eliminarZona(Zona) : boolean
+    + compareTo(Almacenes) : int
+  }
+
+  class Zona {
+    - id_zona : int
+    - codigo_area : String
+    - capacidad_maxima : int
+    - almacen : Almacenes
+    - productos : ArrayList~Producto~
+    + Zona(...)
+    + Zona()
+    + calcularOcupacion() : int
+    + calcularEspacioDisponible() : int
+    + agregarProducto(Producto) : boolean
+    + retirarProducto(Producto) : boolean
+    + reemplazarProducto(Producto) : void
+    + compareTo(Zona) : int
+  }
+
+  class Usuario {
+    - id : int
+    - nombre : String
+    - apellido : String
+    - telefono : int
+    - correo : String
+    - nivel : int
+    - contrasena : String
+    - cargo : String
+    - salario : float
+    - turno : String
+    - almacen_asignado : String
+    - administrador : String
+    + Usuario(...)
+    + Usuario()
+    + compareTo(Usuario) : int
+    + equals(Object) : boolean
+  }
+
+  class Movimiento_Logistico {
+    - id_logistica : int
+    - fecha : String
+    - tipo_movimiento : String
+    - producto_involucrado : String
+    - cantidad : int
+    - operario_responsable : String
+    + Movimiento_Logistico(...)
+    + Movimiento_Logistico()
+    + compareTo(Movimiento_Logistico) : int
+    + equals(Object) : boolean
+  }
+}
+
+package "controlador" {
+  interface ICRUD {
+    + insertar(Object) : boolean
+    + consultarTodos() : void
+    + consultarUno(Object) : Object
+    + ordenar(int) : void
+    + ordenar() : void
+    + update(Object) : Object
+    + delete(Object) : boolean
+    + ordenarPorId() : void
+    + buscarIndice(int) : int
+  }
+
+  class Controlador_Productos {
+    + {static} arregloProductos : ArrayList~Producto~
+    + ordenarPorNombre() : void
+    - quicksort(int, int) : void
+    - mergesort(ArrayList~Producto~) : void
+    - estaOrdenadoDesc() : boolean
+  }
+
+  class Controlador_Almacenes {
+    + {static} arregloAlmacenes : ArrayList~Almacenes~
+    + {static} enlazarCiudadesPendientes() : void
+    - enlazarCiudad(Almacenes) : void
+    - {static} sinTildes(String) : String
+  }
+
+  class Controlador_UbicacionCorporativa {
+    + {static} arregloUC : ArrayList~Ubicacion_Corporativa~
+    - enlazarPais(Ubicacion_Corporativa) : void
+    - quicksort(int, int) : void
+    - estaOrdenadoDesc() : boolean
+  }
+
+  class Controlador_Zona {
+    + {static} arregloZonas : ArrayList~Zona~
+    + {static} eliminarZonasDeAlmacen(Almacenes) : void
+    + {static} quitarProductoDeTodas(Producto) : void
+    + {static} reemplazarProductoEnTodas(Producto) : void
+    - quicksort(int, int) : void
+    - estaOrdenadoDesc() : boolean
+  }
+
+  class Controlador_Usuario {
+    + {static} arregloUsuarios : ArrayList~Usuario~
+    + ordenarPorNombre() : void
+    - quicksort(int, int) : void
+    - mergesort(ArrayList~Usuario~) : void
+    - estaOrdenadoDesc() : boolean
+  }
+
+  class Controlador_movimiento {
+    + {static} arregloMovimiento : ArrayList~Movimiento_Logistico~
+    + ordenarPorFecha() : void
+    - fechaANumero(String) : int
+    - quicksort(int, int) : void
+    - estaOrdenadoDesc() : boolean
+  }
+}
+
+' Herencia
+Producto <|-- ProductoPerecedero
+
+' Composiciones y agregaciones del dominio
+Pais "1" *-- "0..*" Ubicacion_Corporativa : contiene
+Ubicacion_Corporativa "1" o-- "0..*" Almacenes : agrupa
+Almacenes "1" *-- "0..*" Zona : contiene
+Zona "0..*" o-- "0..*" Producto : almacena
+
+' Realizacion de la interfaz CRUD
+ICRUD <|.. Controlador_Productos
+ICRUD <|.. Controlador_Almacenes
+ICRUD <|.. Controlador_UbicacionCorporativa
+ICRUD <|.. Controlador_Zona
+ICRUD <|.. Controlador_Usuario
+ICRUD <|.. Controlador_movimiento
+
+' Asociaciones controlador -> modelo (cada controlador administra su coleccion)
+Controlador_Productos "1" --> "0..*" Producto : gestiona
+Controlador_Almacenes "1" --> "0..*" Almacenes : gestiona
+Controlador_Almacenes ..> Ubicacion_Corporativa : enlaza
+Controlador_UbicacionCorporativa "1" --> "0..*" Ubicacion_Corporativa : gestiona
+Controlador_UbicacionCorporativa ..> Almacenes : transfiere
+Controlador_Zona "1" --> "0..*" Zona : gestiona
+Controlador_Zona ..> Almacenes : usa
+Controlador_Zona ..> Producto : usa
+Controlador_Usuario "1" --> "0..*" Usuario : gestiona
+Controlador_movimiento "1" --> "0..*" Movimiento_Logistico : gestiona
+
+@enduml

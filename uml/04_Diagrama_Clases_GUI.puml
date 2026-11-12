@@ -1,0 +1,126 @@
+@startuml 04_Diagrama_Clases_GUI
+!pragma layout smetana
+' Diagrama de clases de la capa de presentacion Swing.
+' Muestra que controlador usa cada ventana y el control de roles.
+
+title Sistema ERP Fincas de Cacao - Capa GUI (Swing)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 55
+skinparam ranksep 70
+hide empty members
+hide circle
+
+package "GUI" {
+
+  class Frm_Menu {
+    - comboRol : JComboBox~String~
+    - btnAdministrarProductos : JButton
+    - btnAdministrarAlmacenes : JButton
+    - btnAdministrarUbicaciones : JButton
+    - btnAdministrarMovimientos : JButton
+    - btnAdministrarUsuarios : JButton
+    + Frm_Menu()
+    + main(String[]) : void
+    - aplicarRolAlMenu() : void
+    - aplicarRolAVentana(Container) : void
+    - abrir(JFrame) : void
+  }
+
+  class Frm_Login {
+    - textCorreo : JTextField
+    - textContraseña : JTextField
+    + Frm_Login()
+    + main(String[]) : void
+  }
+
+  class Frm_Productos {
+    - cont : Controlador_Productos
+    - modeloTabla : DefaultTableModel
+    - stockMaxFiltro : Integer
+    + Frm_Productos()
+    - cargarTabla() : void
+    - agregarControlesExtra() : void
+  }
+
+  class Frm_Almacenes {
+    - cont : Controlador_Almacenes
+    - contZona : Controlador_Zona
+    - modeloTabla : DefaultTableModel
+    - modeloZonas : DefaultTableModel
+    + Frm_Almacenes()
+    - cargarTabla() : void
+    - avisarSiSinCiudad(Almacenes) : void
+  }
+
+  class Frm_Ubicacion_Corporativa {
+    - cont : Controlador_UbicacionCorporativa
+    - modeloTabla : DefaultTableModel
+    + Frm_Ubicacion_Corporativa()
+    - cargarTabla() : void
+  }
+
+  class Frm_Movimientos {
+    - cont : Controlador_movimiento
+    - modeloTabla : DefaultTableModel
+    + Frm_Movimientos()
+    - cargarTabla(String) : void
+  }
+
+  class Frm_Usuarios {
+    - cont : Controlador_Usuario
+    - modeloTabla : DefaultTableModel
+    + Frm_Usuarios()
+    - cargarTabla() : void
+  }
+
+  class Sesion {
+    + {static} idUsuario : int
+    + {static} nombre : String
+    + {static} rol : String
+    + {static} esAdmin() : boolean
+    + {static} puedeEscribir() : boolean
+    + {static} puedeBorrar() : boolean
+    + {static} rolDeCargo(String) : String
+    + {static} limpiar() : void
+  }
+}
+
+package "controlador" {
+  class Controlador_Productos
+  class Controlador_Almacenes
+  class Controlador_UbicacionCorporativa
+  class Controlador_Zona
+  class Controlador_Usuario
+  class Controlador_movimiento
+}
+
+' Ventana principal abre a las demas
+Frm_Menu ..> Frm_Productos : abre
+Frm_Menu ..> Frm_Almacenes : abre
+Frm_Menu ..> Frm_Ubicacion_Corporativa : abre
+Frm_Menu ..> Frm_Movimientos : abre
+Frm_Menu ..> Frm_Usuarios : abre
+
+' Cada ventana usa su controlador
+Frm_Productos --> Controlador_Productos : usa
+Frm_Almacenes --> Controlador_Almacenes : usa
+Frm_Almacenes --> Controlador_Zona : usa
+Frm_Ubicacion_Corporativa --> Controlador_UbicacionCorporativa : usa
+Frm_Movimientos --> Controlador_movimiento : usa
+Frm_Usuarios --> Controlador_Usuario : usa
+
+' Uso real de la sesion en la Entrega 2
+Frm_Movimientos ..> Sesion : lee el nombre del operario
+
+note bottom of Frm_Login
+  Frm_Login todavia no tiene logica de autenticacion
+  ni abre el menu. Se conecta en la Entrega 3.
+end note
+
+note bottom of Frm_Menu
+  El rol se elige en el combo y se aplica
+  deshabilitando botones; no usa Sesion.
+end note
+
+@enduml

@@ -1,0 +1,157 @@
+@startuml 02_Diagrama_Clases_Dominio
+!pragma layout smetana
+' Diagrama de clases SOLO del modelo de dominio.
+' Es el mas limpio para entregar como "diagrama de clases" del proyecto.
+' Relaciones tomadas del codigo real de la Entrega 2.
+
+title Sistema ERP Fincas de Cacao - Modelo de Dominio
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+hide empty members
+hide circle
+
+package "modelo" {
+
+  class Producto {
+    - id : int
+    - codigoSKU : String
+    - nombre : String
+    - descripción : String
+    - precio_unitario : float
+    - stock_actual : int
+    - proveedor : String
+    - tipo : String
+    + Producto(id, codigoSKU, nombre, descripción, precio, stock, proveedor, tipo)
+    + Producto()
+    + getInfoAdicional() : String
+    + compareTo(Producto) : int
+    + equals(Object) : boolean
+    + toString() : String
+  }
+
+  class ProductoPerecedero {
+    - fechaCaducidad : String
+    + ProductoPerecedero(id, codigoSKU, nombre, descripción, precio, stock, proveedor, tipo, fechaCaducidad)
+    + ProductoPerecedero()
+    + getInfoAdicional() : String
+    + toString() : String
+  }
+
+  class Pais {
+    - id : int
+    - nombre : String
+    - ciudades : ArrayList~Ubicacion_Corporativa~
+    + Pais(id : int, nombre : String)
+    + Pais()
+    + agregarCiudad(Ubicacion_Corporativa) : void
+    + quitarCiudad(Ubicacion_Corporativa) : void
+    + equals(Object) : boolean
+  }
+
+  class Ubicacion_Corporativa {
+    - idCiudad : int
+    - nombreCiudad : String
+    - referenciaPais : String
+    - pais : Pais
+    - almacenes : ArrayList~Almacenes~
+    + Ubicacion_Corporativa(idPais, nombrePais, idCiudad, nombreCiudad, referencia)
+    + Ubicacion_Corporativa(pais : Pais, idCiudad, nombreCiudad, referencia)
+    + Ubicacion_Corporativa()
+    + setPais(Pais) : void
+    + getIdPais() : int
+    + getNombrePais() : String
+    + agregarAlmacen(Almacenes) : void
+    + quitarAlmacen(Almacenes) : void
+    + compareTo(Ubicacion_Corporativa) : int
+  }
+
+  class Almacenes {
+    - id_almacen : int
+    - nombre_almacen : String
+    - ciudad_almacen : String
+    - gerente_asignado : String
+    - ciudad : Ubicacion_Corporativa
+    - zonas : ArrayList~Zona~
+    + Almacenes(id, nombre, ciudad, gerente)
+    + Almacenes()
+    + getCiudad() : Ubicacion_Corporativa
+    + setCiudad(Ubicacion_Corporativa) : void
+    + getCiudad_almacen() : String
+    + getZonas() : ArrayList~Zona~
+    + agregarZona(Zona) : void
+    + eliminarZona(Zona) : boolean
+    + compareTo(Almacenes) : int
+  }
+
+  class Zona {
+    - id_zona : int
+    - codigo_area : String
+    - capacidad_maxima : int
+    - almacen : Almacenes
+    - productos : ArrayList~Producto~
+    + Zona(id_zona, codigo_area, capacidad_maxima)
+    + Zona()
+    + calcularOcupacion() : int
+    + calcularEspacioDisponible() : int
+    + agregarProducto(Producto) : boolean
+    + retirarProducto(Producto) : boolean
+    + reemplazarProducto(Producto) : void
+    + compareTo(Zona) : int
+  }
+
+  class Usuario {
+    - id : int
+    - nombre : String
+    - apellido : String
+    - telefono : int
+    - correo : String
+    - nivel : int
+    - contraseña : String
+    - cargo : String
+    - salario : float
+    - turno : String
+    - almacen_asignado : String
+    - administrador : String
+    + Usuario(...)
+    + Usuario()
+    + compareTo(Usuario) : int
+    + equals(Object) : boolean
+  }
+
+  class Movimiento_Logistico {
+    - id_logistica : int
+    - fecha : String
+    - tipo_movimiento : String
+    - producto_involucrado : String
+    - cantidad : int
+    - operario_responsable : String
+    + Movimiento_Logistico(...)
+    + Movimiento_Logistico()
+    + compareTo(Movimiento_Logistico) : int
+    + equals(Object) : boolean
+  }
+}
+
+' ---------- Herencia ----------
+Producto <|-- ProductoPerecedero
+
+' ---------- Composicion ----------
+Pais "1" *-- "0..*" Ubicacion_Corporativa : contiene
+Almacenes "1" *-- "0..*" Zona : contiene
+
+' ---------- Agregacion ----------
+Ubicacion_Corporativa "1" o-- "0..*" Almacenes : agrupa
+Zona "0..*" o-- "0..*" Producto : almacena
+
+' La ciudad guarda una referencia inversa a su pais (asociacion bidireccional).
+' Se representa con la composicion Pais *-- Ubicacion_Corporativa.
+
+note bottom of Usuario
+  En la Entrega 2 Usuario y Movimiento_Logistico
+  guardan almacen, producto y operario como String.
+  Las asociaciones por objeto se agregaran en los pasos 5 y 6.
+end note
+
+@enduml
